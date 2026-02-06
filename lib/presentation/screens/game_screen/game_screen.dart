@@ -8,6 +8,7 @@ import 'package:pem_ble_app/presentation/widgets/profile_icon.dart';
 import 'package:pem_ble_app/presentation/widgets/coin_counter.dart';
 import 'package:pem_ble_app/presentation/widgets/groups.dart';
 import 'package:pem_ble_app/presentation/widgets/timer.dart';
+import 'package:pem_ble_app/presentation/widgets/hamburger_menu.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({super.key});
@@ -78,57 +79,9 @@ class _GameScreenState extends State<GameScreen> {
                 children: [
                   // Scrollable content
                   SingleChildScrollView(
-                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 24), // Removed top: 80, added top: 24
+                    padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 70), // Added top padding for fixed header
                     child: Column(
                       children: [
-                        // Top row with profile, coin counter, and hamburger menu
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Profile icon and coin counter on the left
-                            Row(
-                              children: [
-                                ProfileIcon(avatarService: _avatarService),
-                                const SizedBox(width: 12),
-                                const CoinCounter(coinAmount: 1250),
-                              ],
-                            ),
-                            // Hamburger menu on the right
-                            GestureDetector(
-                              onTap: () {
-                                Scaffold.of(scaffoldContext).openEndDrawer();
-                              },
-                              child: Container(
-                                width: 70,
-                                height: 38,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      Colors.transparent,
-                                      const Color(0xFF313030),
-                                      const Color(0xFF313030),
-                                    ],
-                                    stops: const [0.0, 0.3, 1.0],
-                                  ),
-                                ),
-                                child: const Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 12),
-                                    child: Icon(
-                                      Icons.menu,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 30), // Spacing after top row
                         // Card Types widget - Fully Responsive Layout with Sharp Corners & Increased Spacing
                         Builder(
                           builder: (context) {
@@ -187,29 +140,31 @@ class _GameScreenState extends State<GameScreen> {
                                 child: SizedBox(
                                   width: cardWidth,
                                   height: cardHeight,
-                                  child: Stack(
-                                    children: [
-                                      // Card image
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(cardCornerRadius), // Sharp corners
-                                        child: Image.network(
-                                          getCardTypeUrl(cardNumber),
-                                          fit: BoxFit.cover,
-                                          width: double.infinity,
-                                          height: double.infinity,
-                                          loadingBuilder: (context, child, loadingProgress) {
-                                            if (loadingProgress == null) return child;
-                                            return Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.black.withValues(alpha: 0.4),
-                                                borderRadius: BorderRadius.circular(cardCornerRadius),
-                                              ),
-                                              child: Center(
-                                                child: CircularProgressIndicator(
-                                                  value: loadingProgress.expectedTotalBytes != null
-                                                      ? loadingProgress.cumulativeBytesLoaded /
-                                                          loadingProgress.expectedTotalBytes!
-                                                      : null,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(cardCornerRadius), // Clip to card corners
+                                    child: Stack(
+                                      children: [
+                                        // Card image
+                                        ClipRRect(
+                                          borderRadius: BorderRadius.circular(cardCornerRadius), // Sharp corners
+                                          child: Image.network(
+                                            getCardTypeUrl(cardNumber),
+                                            fit: BoxFit.cover,
+                                            width: double.infinity,
+                                            height: double.infinity,
+                                            loadingBuilder: (context, child, loadingProgress) {
+                                              if (loadingProgress == null) return child;
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                  color: Colors.black.withValues(alpha: 0.4),
+                                                  borderRadius: BorderRadius.circular(cardCornerRadius),
+                                                ),
+                                                child: Center(
+                                                  child: CircularProgressIndicator(
+                                                    value: loadingProgress.expectedTotalBytes != null
+                                                        ? loadingProgress.cumulativeBytesLoaded /
+                                                            loadingProgress.expectedTotalBytes!
+                                                        : null,
                                                   color: const Color(0xFFa6a6a6),
                                                   strokeWidth: borderWidth,
                                                 ),
@@ -251,10 +206,10 @@ class _GameScreenState extends State<GameScreen> {
                                       // Selection overlay
                                       if (isSelected)
                                         Positioned(
-                                          top: -1, // Extend 1px beyond card edges
-                                          left: -1,
-                                          right: -1.5, // Extended 0.5px more on the right side
-                                          bottom: -1,
+                                          top: -cardWidth * 0.02, // Responsive: 2% of card width (increased)
+                                          left: -cardWidth * 0.02,
+                                          right: -cardWidth * 0.025, // Responsive: 2.5% of card width (increased, slightly more on right)
+                                          bottom: -cardWidth * 0.02,
                                           child: ClipRRect(
                                             borderRadius: BorderRadius.circular(overlayCornerRadius), // Use overlay-specific radius
                                             child: Container(
@@ -266,8 +221,8 @@ class _GameScreenState extends State<GameScreen> {
                                                 child: Image.network(
                                                   getOverlayUrl(),
                                                   fit: BoxFit.cover,
-                                                  width: cardWidth + 2.5, // 2.5px wider to ensure right side coverage
-                                                  height: cardHeight + 2, // 2px taller to ensure coverage
+                                                  width: cardWidth + (cardWidth * 0.05), // Responsive: card width + 5% (increased)
+                                                  height: cardHeight + (cardWidth * 0.04), // Responsive: card height + 4% (increased)
                                                   errorBuilder: (context, error, stackTrace) {
                                                     // Fallback overlay if image fails to load
                                                     return Container(
@@ -295,6 +250,7 @@ class _GameScreenState extends State<GameScreen> {
                                         ),
                                     ],
                                   ),
+                                    ),
                                 ),
                               );
                             }
@@ -338,7 +294,9 @@ class _GameScreenState extends State<GameScreen> {
                                             'جۆری کارتەکان دیاری بکە',
                                             style: TextStyle(
                                               color: Colors.white,
-                                              fontSize: screenWidth * 0.032, // Changed to match Groups widget (3.2% of screen width)
+                                              fontSize: screenWidth < 600 
+                                                  ? screenWidth * 0.04 // Phone: 4% of screen width
+                                                  : screenWidth * 0.032, // Tablet: keep current
                                               fontWeight: FontWeight.bold,
                                               fontFamily: 'kurdish',
                                             ),
@@ -414,7 +372,9 @@ class _GameScreenState extends State<GameScreen> {
                                         'کلیک لە کارتەکان بکە بۆ دیاری کردی ئەو کارتانەی ئەتەوێ یاری پێ بکەی.',
                                         style: TextStyle(
                                           color: Colors.white.withValues(alpha: 0.8), // 80% opacity
-                                          fontSize: screenWidth * 0.018, // Smaller font size (1.8% of screen width)
+                                          fontSize: screenWidth < 600 
+                                              ? screenWidth * 0.03 // Phone: 3% of screen width
+                                              : screenWidth * 0.018, // Tablet: keep current
                                           fontFamily: 'kurdish',
                                           height: 1.1, // Reduced line spacing (default is ~1.2)
                                         ),
@@ -459,6 +419,24 @@ class _GameScreenState extends State<GameScreen> {
                         const SizedBox(height: 100), // Extra space at bottom for comfortable scrolling
                       ],
                     ),
+                  ),
+                  // Profile icon and coin counter in top left corner (fixed position)
+                  Positioned(
+                    top: 16,
+                    left: 16,
+                    child: Row(
+                      children: [
+                        ProfileIcon(avatarService: _avatarService),
+                        const SizedBox(width: 12),
+                        const CoinCounter(coinAmount: 1250),
+                      ],
+                    ),
+                  ),
+                  // Hamburger menu icon in top right corner (fixed position)
+                  HamburgerMenu(
+                    onTap: () {
+                      Scaffold.of(scaffoldContext).openEndDrawer();
+                    },
                   ),
                 ],
               ),

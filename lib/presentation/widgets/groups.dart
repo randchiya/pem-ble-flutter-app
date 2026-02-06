@@ -257,7 +257,9 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
             'کلیک لەسەر ناوەکان بکە بۆ گۆڕینی ناوی کەسەکان',
             style: TextStyle(
               color: Colors.white.withValues(alpha: 0.7),
-              fontSize: screenWidth * 0.025, // Reduced from 0.032
+              fontSize: screenWidth < 600 
+                  ? screenWidth * 0.03 // Phone: 3% of screen width
+                  : screenWidth * 0.025, // Tablet: keep current
               fontFamily: 'kurdish',
             ),
             textDirection: TextDirection.rtl,
@@ -269,6 +271,11 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
   }
 
   Widget _buildHeader(double screenWidth) {
+    // Responsive height for 2/4 selector
+    final selectorHeight = screenWidth < 600 
+        ? screenWidth * 0.055 // Phone: taller selector
+        : screenWidth * 0.045; // Tablet: keep current
+    
     return Column(
       children: [
         // Title and number selector in same row
@@ -278,10 +285,10 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
           children: [
             // Number selector (2 and 4) on the left - single segmented control
             Container(
-              height: screenWidth * 0.045, // Made thinner (reduced height only)
+              height: selectorHeight, // Responsive height
               decoration: BoxDecoration(
                 color: const Color(0xFF313030).withValues(alpha: 0.65), // #313030 background with 65% opacity
-                borderRadius: BorderRadius.circular(screenWidth * 0.0225), // Adjusted for new height
+                borderRadius: BorderRadius.circular(selectorHeight / 2), // Adjusted for responsive height
                 border: Border.all(
                   color: const Color(0xFFa6a6a6), // Added a6a6a6 outline
                   width: 1,
@@ -299,14 +306,14 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                     },
                     child: Container(
                       width: screenWidth * 0.06, // Keep original width
-                      height: screenWidth * 0.045, // Match container height
+                      height: selectorHeight, // Match container height
                       decoration: BoxDecoration(
                         color: selectedPlayerCount == 4 
                             ? const Color(0xFF457A00) // Solid green when selected
                             : Colors.transparent, // Transparent when not selected
                         borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(screenWidth * 0.0225), // Adjusted for new height
-                          bottomLeft: Radius.circular(screenWidth * 0.0225),
+                          topLeft: Radius.circular(selectorHeight / 2), // Adjusted for responsive height
+                          bottomLeft: Radius.circular(selectorHeight / 2),
                         ),
                       ),
                       child: Center(
@@ -316,7 +323,9 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                             color: selectedPlayerCount == 4 
                                 ? Colors.white // White text when selected
                                 : Colors.white.withValues(alpha: 0.7), // Light gray when not selected
-                            fontSize: screenWidth * 0.025, // Keep original font size
+                            fontSize: screenWidth < 600 
+                                ? screenWidth * 0.04 // Phone: 4% of screen width
+                                : screenWidth * 0.025, // Tablet: keep current
                             fontWeight: FontWeight.bold,
                             fontFamily: 'kurdish',
                           ),
@@ -333,14 +342,14 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                     },
                     child: Container(
                       width: screenWidth * 0.06, // Keep original width
-                      height: screenWidth * 0.045, // Match container height
+                      height: selectorHeight, // Match container height
                       decoration: BoxDecoration(
                         color: selectedPlayerCount == 2 
                             ? const Color(0xFF457A00) // Solid green when selected
                             : Colors.transparent, // Transparent when not selected
                         borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(screenWidth * 0.0225), // Adjusted for new height
-                          bottomRight: Radius.circular(screenWidth * 0.0225),
+                          topRight: Radius.circular(selectorHeight / 2), // Adjusted for responsive height
+                          bottomRight: Radius.circular(selectorHeight / 2),
                         ),
                       ),
                       child: Center(
@@ -350,7 +359,9 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                             color: selectedPlayerCount == 2 
                                 ? Colors.white // White text when selected
                                 : Colors.white.withValues(alpha: 0.7), // Light gray when not selected
-                            fontSize: screenWidth * 0.025, // Keep original font size
+                            fontSize: screenWidth < 600 
+                                ? screenWidth * 0.04 // Phone: 4% of screen width
+                                : screenWidth * 0.025, // Tablet: keep current
                             fontWeight: FontWeight.bold,
                             fontFamily: 'kurdish',
                           ),
@@ -368,7 +379,9 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                 'ژمارەی ئەو کەسانەی یاری دەکەن',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: screenWidth * 0.032, // Reduced from 0.04
+                  fontSize: screenWidth < 600 
+                      ? screenWidth * 0.04 // Phone: 4% of screen width
+                      : screenWidth * 0.032, // Tablet: keep current
                   fontWeight: FontWeight.bold,
                   fontFamily: 'kurdish',
                 ),
@@ -391,9 +404,16 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
   }
 
   Widget _build2PlayerCards(double screenWidth) {
-    // Use EXACT same height calculation as 4-player individual cards
-    final fourPlayerContainerHeight = screenWidth * 0.175; // Same as 4-player
+    // Responsive height - taller on phones
+    final fourPlayerContainerHeight = screenWidth < 600 
+        ? screenWidth * 0.22 // Phone: taller cards
+        : screenWidth * 0.175; // Tablet: keep current
     final individualCardHeight = (fourPlayerContainerHeight - screenWidth * 0.01) / 2; // Same calculation as 4-player
+    
+    // Responsive font size for group titles
+    final groupTitleFontSize = screenWidth < 600 
+        ? screenWidth * 0.035 // Phone: 3.5% of screen width
+        : screenWidth * 0.025; // Tablet: keep current
     
     return Column(
       children: [
@@ -408,7 +428,7 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                   'گرووپی ٢',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: screenWidth * 0.025,
+                    fontSize: groupTitleFontSize,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'kurdish',
                   ),
@@ -429,7 +449,7 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                   'گرووپی ١',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: screenWidth * 0.025,
+                    fontSize: groupTitleFontSize,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'kurdish',
                   ),
@@ -477,6 +497,11 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
   }
 
   Widget _build4PlayerCards(double screenWidth) {
+    // Responsive font size for group titles
+    final groupTitleFontSize = screenWidth < 600 
+        ? screenWidth * 0.035 // Phone: 3.5% of screen width
+        : screenWidth * 0.025; // Tablet: keep current
+        
     return Column(
       children: [
         // Group titles row
@@ -490,7 +515,7 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                   'گرووپی ٢',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: screenWidth * 0.025,
+                    fontSize: groupTitleFontSize,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'kurdish',
                   ),
@@ -511,7 +536,7 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                   'گرووپی ١',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: screenWidth * 0.025,
+                    fontSize: groupTitleFontSize,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'kurdish',
                   ),
@@ -525,7 +550,9 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
         
         // Player cards with divider
         Container(
-          height: screenWidth * 0.175, // Made 65% thinner (was 0.5, now 0.5 * 0.35 = 0.175)
+          height: screenWidth < 600 
+              ? screenWidth * 0.22 // Phone: taller cards
+              : screenWidth * 0.175, // Tablet: keep current
           child: Row(
             children: [
               // Left column (2 cards stacked)
@@ -597,8 +624,15 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
     // Determine text opacity - same for all states
     double textOpacity = 0.9; // Same opacity for all players and all states
     
-    // Determine text size - same for all players
-    double fontSize = screenWidth * 0.025; // Same size as Player 1 for all players
+    // Determine text size - same for all players but different on phone vs tablet
+    double fontSize = screenWidth < 600 
+        ? screenWidth * 0.03 // Phone: 3% of screen width
+        : screenWidth * 0.025; // Tablet: keep current
+    
+    // Responsive icon size - bigger on phones
+    double iconSize = screenWidth < 600 
+        ? screenWidth * 0.08 // Phone: 8% of screen width (bigger)
+        : screenWidth * 0.06; // Tablet: keep current
     
     return Container(
       decoration: BoxDecoration(
@@ -630,9 +664,8 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
             children: [
               // Player name on the left - editable for non-Player 1
               Expanded(
-                child: Container(
-                  alignment: Alignment.centerRight, // Right align the content
-                  transform: Matrix4.translationValues(0, screenWidth < 600 ? -screenWidth * 0.004 : screenWidth * 0.001, 0), // Higher on phone, slightly lower on tablet
+                child: Align(
+                  alignment: Alignment.centerRight, // Center vertically, right horizontally
                   child: isEditable
                       ? TextField(
                           controller: _controllers[playerName],
@@ -650,36 +683,15 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                                 blurRadius: 4,
                                 offset: const Offset(0, 0),
                               ),
-                              // Add black outline for all players
-                              Shadow(
-                                color: Colors.black,
-                                blurRadius: 1,
-                                offset: const Offset(-1, -1),
-                              ),
-                              Shadow(
-                                color: Colors.black,
-                                blurRadius: 1,
-                                offset: const Offset(1, -1),
-                              ),
-                              Shadow(
-                                color: Colors.black,
-                                blurRadius: 1,
-                                offset: const Offset(-1, 1),
-                              ),
-                              Shadow(
-                                color: Colors.black,
-                                blurRadius: 1,
-                                offset: const Offset(1, 1),
-                              ),
-                            ], // Same shadows for all players
+                            ], // Removed black outline shadows
                           ),
                           textDirection: TextDirection.rtl,
                           textAlign: TextAlign.right, // Always right align
                           decoration: InputDecoration(
                             border: InputBorder.none,
-                            contentPadding: EdgeInsets.only(
-                              bottom: screenWidth < 600 ? 2.8 : 1.0, // Much more dramatic difference on tablet
-                            ),
+                            contentPadding: screenWidth < 600 
+                                ? EdgeInsets.only(bottom: fontSize * 0.35) // Phone: larger adjustment for centering
+                                : EdgeInsets.zero, // Tablet: no padding
                             isDense: true, // Reduce vertical padding
                             hintText: _getPlaceholderText(_controllers[playerName]?.text ?? ''),
                             hintStyle: TextStyle(
@@ -691,7 +703,7 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                             ),
                           ),
                           maxLines: 1,
-                          textAlignVertical: TextAlignVertical.center, // Back to center for better positioning
+                          textAlignVertical: TextAlignVertical.center, // Center vertically
                           onSubmitted: (value) {
                             // Validate the text when user presses enter
                             if (_validatePlayerName(playerName, value)) {
@@ -739,28 +751,7 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                                 blurRadius: 4,
                                 offset: const Offset(0, 0),
                               ),
-                              // Add black outline for all players
-                              Shadow(
-                                color: Colors.black,
-                                blurRadius: 1,
-                                offset: const Offset(-1, -1),
-                              ),
-                              Shadow(
-                                color: Colors.black,
-                                blurRadius: 1,
-                                offset: const Offset(1, -1),
-                              ),
-                              Shadow(
-                                color: Colors.black,
-                                blurRadius: 1,
-                                offset: const Offset(-1, 1),
-                              ),
-                              Shadow(
-                                color: Colors.black,
-                                blurRadius: 1,
-                                offset: const Offset(1, 1),
-                              ),
-                            ], // Same shadows for all players
+                            ], // Removed black outline shadows
                           ),
                           textDirection: TextDirection.rtl,
                           textAlign: TextAlign.right,
@@ -777,13 +768,13 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                 ProfileIcon(
                   avatarService: widget.avatarService,
                   enableNavigation: false, // Disable navigation in Groups widget
-                  customSize: screenWidth * 0.06, // Same size as before
+                  customSize: iconSize, // Responsive size
                 )
               else
                 // Use generic icon for other players
                 Container(
-                  width: screenWidth * 0.06, // 6% of screen width
-                  height: screenWidth * 0.06, // Square aspect ratio
+                  width: iconSize, // Responsive size
+                  height: iconSize, // Square aspect ratio
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.black.withValues(alpha: 0.4),
@@ -795,7 +786,7 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
                   child: Icon(
                     Icons.person,
                     color: Colors.white.withValues(alpha: 0.8),
-                    size: screenWidth * 0.035, // 3.5% of screen width
+                    size: iconSize * 0.58, // Proportional to icon size
                   ),
                 ),
             ],
@@ -805,3 +796,4 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
     );
   }
 }
+

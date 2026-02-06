@@ -38,66 +38,26 @@ class _AvatarScreenState extends State<AvatarScreen> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false, // Remove default back button
-        actions: [
-          // Profile icon, coin counter, and back button in the same row
-          Padding(
-            padding: const EdgeInsets.only(top: 5.0, right: 16.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Profile icon widget
-                ProfileIcon(avatarService: _avatarService),
-                const SizedBox(width: 10), // Reduced from 20 to 10
-                // Coin counter widget
-                const CoinCounter(coinAmount: 1250),
-                const SizedBox(width: 400), // Set to 400px for maximum space with back button
-                // Back button
-                TextButton.icon(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Text(
-                    'گەڕانەوە',
-                    style: TextStyle(
-                      color: Colors.red,
-                      fontSize: 18,
-                      fontFamily: 'Kurdish',
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline,
-                      decorationColor: Colors.red,
-                    ),
-                  ),
-                  label: const Icon(Icons.arrow_back, color: Colors.red),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
       body: ResponsiveBackground(
         imagePath: AppAssets.mainBackground,
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Directionality(
-              textDirection: TextDirection.rtl,
-              child: CustomScrollView(
-                slivers: [
-                  // Top spacing
-                  const SliverToBoxAdapter(
-                    child: SizedBox(height: 20),
-                  ),
-                  // Text header as sliver
-                  SliverToBoxAdapter(
-                    child: Container(
-                      width: double.infinity,
+          child: Stack(
+            children: [
+              // Main content
+              Padding(
+                padding: const EdgeInsets.only(left: 24.0, right: 24.0, top: 70.0), // Added top padding for fixed header
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: CustomScrollView(
+                    slivers: [
+                      // Top spacing
+                      const SliverToBoxAdapter(
+                        child: SizedBox(height: 20),
+                      ),
+                      // Text header as sliver
+                      SliverToBoxAdapter(
+                        child: Container(
+                          width: double.infinity,
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
                         color: Colors.black.withValues(alpha: 0.6), // Darker background
@@ -204,7 +164,46 @@ class _AvatarScreenState extends State<AvatarScreen> {
                   ),
                 ],
               ),
-            ),
+                ),
+              ),
+              // Profile icon and coin counter in top left corner (fixed position)
+              Positioned(
+                top: 16,
+                left: 16,
+                child: Row(
+                  children: [
+                    ProfileIcon(avatarService: _avatarService),
+                    const SizedBox(width: 12),
+                    const CoinCounter(coinAmount: 1250),
+                  ],
+                ),
+              ),
+              // Back button in top right corner (fixed position)
+              Positioned(
+                top: 16,
+                right: 16,
+                child: TextButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: const Text(
+                    'گەڕانەوە',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 18,
+                      fontFamily: 'Kurdish',
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.red,
+                    ),
+                  ),
+                  label: const Icon(Icons.arrow_back, color: Colors.red),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),

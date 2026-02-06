@@ -115,6 +115,13 @@ class _TimerWidgetState extends State<TimerWidget> {
         .getPublicUrl('edit-timer.png');
   }
   
+  // Get timer digit background URL from Supabase
+  String _getTimerDigitBgUrl() {
+    return SupabaseService.client.storage
+        .from('Timer BG')
+        .getPublicUrl('Timer-digit-bg.png');
+  }
+  
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -198,7 +205,9 @@ class _TimerWidgetState extends State<TimerWidget> {
                       'کلیک لێرە بکە بۆ گۆرینی کات',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.8),
-                        fontSize: screenWidth * 0.02,
+                        fontSize: screenWidth < 600 
+                            ? screenWidth * 0.03 // Phone: 3% of screen width
+                            : screenWidth * 0.02, // Tablet: keep current
                         fontWeight: FontWeight.w400,
                         fontFamily: 'kurdish',
                       ),
@@ -246,29 +255,59 @@ class _TimerWidgetState extends State<TimerWidget> {
           ),
           SizedBox(height: verticalSpacing), // Responsive spacing
           
-          // Timer display (centered, with background)
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.06, // Increased from 0.04 to 0.06 (50% wider)
-              vertical: screenWidth < 600 
-                  ? screenWidth * 0.015 // Phone: increased from 0.01 to 0.015 (50% taller)
-                  : screenWidth * 0.008, // Tablet: increased from 0.005 to 0.008 (60% taller)
-            ),
-            decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(3), // Fixed pixel value instead of percentage for consistent rectangularity
-              border: Border.all(
-                color: _totalSeconds <= 10 && _isRunning 
-                    ? const Color(0xFFCC0000) // Red when time is running out
-                    : const Color(0xFFa6a6a6).withValues(alpha: 0.6),
-                width: 1,
-              ),
-            ),
-            child: Text(
-              _formatTime(),
-              style: TextStyle(
-                color: _totalSeconds <= 10 && _isRunning 
-                    ? const Color(0xFFFF4444) // Red text when time is running out
+          // Timer display (centered, with background image and fade-out edges)
+          ShaderMask(
+            shaderCallback: (Rect bounds) {
+              return LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.white,
+                  Colors.white,
+                  Colors.transparent,
+                ],
+                stops: const [0.0, 0.15, 0.85, 1.0],
+              ).createShader(bounds);
+            },
+            blendMode: BlendMode.dstIn,
+            child: ShaderMask(
+              shaderCallback: (Rect bounds) {
+                return LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [
+                    Colors.transparent,
+                    Colors.white,
+                    Colors.white,
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.15, 0.85, 1.0],
+                ).createShader(bounds);
+              },
+              blendMode: BlendMode.dstIn,
+              child: Container(
+                padding: EdgeInsets.symmetric(
+                  horizontal: screenWidth * 0.06,
+                  vertical: screenWidth < 600 
+                      ? screenWidth * 0.01 // Phone: decreased height
+                      : screenWidth * 0.008, // Tablet: keep current
+                ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(3),
+                  image: DecorationImage(
+                    image: NetworkImage(_getTimerDigitBgUrl()),
+                    fit: BoxFit.cover,
+                    onError: (exception, stackTrace) {
+                      debugPrint('Failed to load timer digit background: $exception');
+                    },
+                  ),
+                ),
+                child: Text(
+                  _formatTime(),
+                  style: TextStyle(
+                    color: _totalSeconds <= 10 && _isRunning 
+                        ? const Color(0xFFFF4444) // Red text when time is running out
                     : Colors.white,
                 fontSize: screenWidth < 600 
                     ? screenWidth * 0.06 // Phone: keep current size
@@ -302,6 +341,8 @@ class _TimerWidgetState extends State<TimerWidget> {
                     offset: const Offset(1, 1),
                   ),
                 ],
+              ),
+            ),
               ),
             ),
           ),
