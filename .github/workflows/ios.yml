@@ -2,6 +2,8 @@ name: Build iOS IPA
 on:
   push:
     branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -18,21 +20,37 @@ jobs:
         channel: 'stable'
         
     - name: Install dependencies
+      working-directory: pem_ble_flutter_app
       run: flutter pub get
       
+    - name: Analyze code
+      working-directory: pem_ble_flutter_app
+      run: flutter analyze
+      
     - name: Build iOS (no codesign)
+      working-directory: pem_ble_flutter_app
       run: flutter build ios --release --no-codesign
       
     - name: Create IPA
+      working-directory: pem_ble_flutter_app
       run: |
         cd build/ios/iphoneos
         mkdir Payload
         cp -r Runner.app Payload/
         zip -r ../../../pem_ble_app.ipa Payload/
+        cd ../../..
+        ls -lh pem_ble_app.ipa
         
     - name: Upload IPA
       uses: actions/upload-artifact@v4
       with:
-        name: iOS-IPA
-        path: pem_ble_app.ipa
+        name: pem-ble-app-ios-${{ github.sha }}
+        path: pem_ble_flutter_app/pem_ble_app.ipa
         retention-days: 30
+        
+    - name: Upload IPA (Latest)
+      uses: actions/upload-artifact@v4
+      with:
+        name: pem-ble-app-ios-latest
+        path: pem_ble_flutter_app/pem_ble_app.ipa
+        retention-days: 90
