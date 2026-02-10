@@ -37,9 +37,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _onCardTypeChanged(int cardNumber) {
-    setState(() {
-      _selectedCardType = cardNumber;
-    });
+    // Card type changed - can be used for future logic
   }
 
   @override
