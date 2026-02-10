@@ -31,9 +31,7 @@ class _CardCarouselState extends State<CardCarousel> with SingleTickerProviderSt
   static const double cardHeightTablet = 420.0;
   static const double cardWidthPhone = 220.0; // Smaller for phones
   static const double cardHeightPhone = 308.0; // Maintains 5:7 ratio
-  static const double centerScale = 1.0;
   static const double sideScale = 0.85;
-  static const double centerOpacity = 1.0;
   static const double sideOpacity = 0.55;
   static const double cardBorderRadius = 12.0;
   
