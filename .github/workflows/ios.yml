@@ -2,8 +2,6 @@ name: Build iOS IPA
 on:
   push:
     branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -31,19 +29,10 @@ jobs:
         mkdir Payload
         cp -r Runner.app Payload/
         zip -r ../../../pem_ble_app.ipa Payload/
-        cd ../../..
-        ls -lh pem_ble_app.ipa
         
     - name: Upload IPA
       uses: actions/upload-artifact@v4
       with:
-        name: pem-ble-app-ios-${{ github.sha }}
+        name: iOS-IPA
         path: pem_ble_app.ipa
         retention-days: 30
-        
-    - name: Upload IPA (Latest)
-      uses: actions/upload-artifact@v4
-      with:
-        name: pem-ble-app-ios-latest
-        path: pem_ble_app.ipa
-        retention-days: 90

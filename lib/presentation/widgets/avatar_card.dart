@@ -173,7 +173,7 @@ class AvatarCard extends StatelessWidget {
                                 ),
                                 SizedBox(width: isTablet ? 2 : 1),
                                 // New coin icon from Supabase
-                                Container(
+                                SizedBox(
                                   width: isTablet ? 12 : 10,
                                   height: isTablet ? 12 : 10,
                                   child: Image.network(

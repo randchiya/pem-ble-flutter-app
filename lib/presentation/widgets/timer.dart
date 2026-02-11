@@ -67,6 +67,255 @@ class _TimerWidgetState extends State<TimerWidget> {
     });
   }
   
+  void _showEditTimerDialog() {
+    // Stop timer while editing
+    final wasRunning = _isRunning;
+    if (_isRunning) {
+      _stopTimer();
+    }
+    
+    // Calculate current minutes and seconds
+    int currentMinutes = _totalSeconds ~/ 60;
+    int currentSeconds = _totalSeconds % 60;
+    
+    // Controllers for input
+    final minutesController = TextEditingController(text: currentMinutes.toString());
+    final secondsController = TextEditingController(text: currentSeconds.toString());
+    
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: AlertDialog(
+            backgroundColor: const Color(0xFF313030),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+              side: const BorderSide(
+                color: Color(0xFFa6a6a6),
+                width: 2,
+              ),
+            ),
+            title: const Text(
+              'گۆڕینی کات',
+              style: TextStyle(
+                color: Colors.white,
+                fontFamily: 'kurdish',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Seconds input
+                    SizedBox(
+                      width: 80,
+                      child: TextField(
+                        controller: secondsController,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'چرکە',
+                          labelStyle: const TextStyle(
+                            color: Color(0xFFa6a6a6),
+                            fontFamily: 'kurdish',
+                          ),
+                          filled: true,
+                          fillColor: Colors.black.withValues(alpha: 0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFa6a6a6),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFa6a6a6),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF457A00),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        ':',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    // Minutes input
+                    SizedBox(
+                      width: 80,
+                      child: TextField(
+                        controller: minutesController,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'خولەک',
+                          labelStyle: const TextStyle(
+                            color: Color(0xFFa6a6a6),
+                            fontFamily: 'kurdish',
+                          ),
+                          filled: true,
+                          fillColor: Colors.black.withValues(alpha: 0.3),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFa6a6a6),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color(0xFFa6a6a6),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(
+                              color: Color(0xFF457A00),
+                              width: 2,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            actions: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // Cancel button
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      // Resume timer if it was running
+                      if (wasRunning) {
+                        _startTimer();
+                      }
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.grey.withValues(alpha: 0.3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'پاشگەزبوونەوە',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'kurdish',
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  // Confirm button
+                  TextButton(
+                    onPressed: () {
+                      final minutes = int.tryParse(minutesController.text) ?? 0;
+                      final seconds = int.tryParse(secondsController.text) ?? 0;
+                      
+                      // Validate input
+                      if (minutes < 0 || minutes > 99 || seconds < 0 || seconds > 59) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'تکایە ژمارەیەکی دروست بنووسە (خولەک: ٠-٩٩، چرکە: ٠-٥٩)',
+                              style: TextStyle(fontFamily: 'kurdish'),
+                              textDirection: TextDirection.rtl,
+                            ),
+                            backgroundColor: Color(0xFFCC0000),
+                          ),
+                        );
+                        return;
+                      }
+                      
+                      setState(() {
+                        _totalSeconds = (minutes * 60) + seconds;
+                      });
+                      
+                      Navigator.of(context).pop();
+                      
+                      // Show success message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'کات بە سەرکەوتوویی گۆڕدرا',
+                            style: TextStyle(fontFamily: 'kurdish'),
+                            textDirection: TextDirection.rtl,
+                          ),
+                          backgroundColor: Color(0xFF457A00),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: const Color(0xFF457A00),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'پەسەندکردن',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'kurdish',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    ).then((_) {
+      // Clean up controllers
+      minutesController.dispose();
+      secondsController.dispose();
+    });
+  }
+  
   String _formatTime() {
     int minutes = _totalSeconds ~/ 60;
     int seconds = _totalSeconds % 60;
@@ -185,19 +434,7 @@ class _TimerWidgetState extends State<TimerWidget> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               GestureDetector(
-                onTap: () {
-                  // TODO: Add edit timer functionality
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'دەستکاری کردنی کات',
-                        style: TextStyle(fontFamily: 'kurdish'),
-                        textDirection: TextDirection.rtl,
-                      ),
-                      backgroundColor: Color(0xFF457A00),
-                    ),
-                  );
-                },
+                onTap: _showEditTimerDialog,
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

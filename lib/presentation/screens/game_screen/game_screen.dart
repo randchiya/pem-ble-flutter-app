@@ -19,6 +19,8 @@ class GameScreen extends StatefulWidget {
 
 class _GameScreenState extends State<GameScreen> {
   final AvatarService _avatarService = AvatarService();
+  
+  int _selectedCardType = 5; // Default to card 5
 
   @override
   void initState() {
@@ -37,7 +39,9 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _onCardTypeChanged(int cardNumber) {
-    // Card type changed - can be used for future logic
+    setState(() {
+      _selectedCardType = cardNumber;
+    });
   }
 
   @override

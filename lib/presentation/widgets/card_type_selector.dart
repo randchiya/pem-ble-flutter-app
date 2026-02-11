@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pem_ble_app/presentation/widgets/card_carousel.dart';
+import 'package:pem_ble_app/data/services/supabase_service.dart';
 
 class CardTypeSelector extends StatefulWidget {
   final Function(int)? onCardChanged;
@@ -77,6 +78,17 @@ class _CardTypeSelectorState extends State<CardTypeSelector> {
   // Track checkbox states dynamically based on current card
   late List<bool> _checkboxStates;
   
+  // Selected overlay URL from Supabase
+  String get _selectedOverlayUrl {
+    return SupabaseService.client.storage
+        .from('Card Types')
+        .getPublicUrl('Selected-Overlay.png');
+  }
+  
+  bool get _hasSelectedCheckbox {
+    return _checkboxStates.any((isChecked) => isChecked);
+  }
+  
   @override
   void initState() {
     super.initState();
@@ -115,9 +127,6 @@ class _CardTypeSelectorState extends State<CardTypeSelector> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isPhone = screenWidth < 600;
     
-    // Check if any checkbox is selected
-    final hasSelection = _checkboxStates.any((isChecked) => isChecked);
-    
     return Container(
       width: screenWidth - 48,
       padding: const EdgeInsets.only(
@@ -127,7 +136,7 @@ class _CardTypeSelectorState extends State<CardTypeSelector> {
         right: horizontalPadding,
       ),
       decoration: BoxDecoration(
-        color: Colors.black,
+        color: const Color(0xFF1a1a1a),
         borderRadius: BorderRadius.circular(containerBorderRadius),
         border: Border.all(
           color: Colors.white,
@@ -151,11 +160,30 @@ class _CardTypeSelectorState extends State<CardTypeSelector> {
           
           const SizedBox(height: 20),
           
-          // Card Carousel - ABSOLUTE SIZING
-          CardCarousel(
-            initialCard: 4,
-            onCardChanged: _onCardChanged,
-            showSelectedOverlay: hasSelection,
+          // Card Carousel with overlay - ABSOLUTE SIZING
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              CardCarousel(
+                initialCard: 4,
+                onCardChanged: _onCardChanged,
+              ),
+              // Show overlay when any checkbox is selected
+              if (_hasSelectedCheckbox)
+                IgnorePointer(
+                  child: SizedBox(
+                    width: isPhone ? 220 : 300,
+                    height: isPhone ? 308 : 420,
+                    child: Image.network(
+                      _selectedOverlayUrl,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ),
+                ),
+            ],
           ),
           
           const SizedBox(height: 16),
@@ -248,7 +276,7 @@ class _CardTypeSelectorState extends State<CardTypeSelector> {
                 horizontal: screenWidth * 0.02,
               ),
               decoration: BoxDecoration(
-                color: const Color(0xFF1a1a1a),
+                color: Colors.transparent,
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                   color: Colors.white,

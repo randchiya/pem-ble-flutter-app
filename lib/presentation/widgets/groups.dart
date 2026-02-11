@@ -462,13 +462,13 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
         ),
         
         // Player cards with divider - EXACT SAME RECTANGLE HEIGHT AS 4-PLAYER
-        Container(
+        SizedBox(
           height: individualCardHeight, // Use the exact same individual card height as 4-player
           child: Row(
             children: [
               // Left player card - کەسی ٢ (Player 2)
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: individualCardHeight, // Force exact same height as 4-player individual cards
                   child: _buildPlayerCard('کەسی ٢', screenWidth),
                 ),
@@ -484,7 +484,7 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
               
               // Right player card - کەسی ١ (Player 1)
               Expanded(
-                child: Container(
+                child: SizedBox(
                   height: individualCardHeight, // Force exact same height as 4-player individual cards
                   child: _buildPlayerCard('کەسی ١', screenWidth),
                 ),
@@ -549,7 +549,7 @@ class _GroupsState extends State<Groups> with TickerProviderStateMixin {
         ),
         
         // Player cards with divider
-        Container(
+        SizedBox(
           height: screenWidth < 600 
               ? screenWidth * 0.22 // Phone: taller cards
               : screenWidth * 0.175, // Tablet: keep current

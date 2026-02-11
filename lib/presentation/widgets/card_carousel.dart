@@ -307,33 +307,6 @@ class _CardCarouselState extends State<CardCarousel> with SingleTickerProviderSt
       ),
     );
   }
-
-  Widget _buildCardContent(int index, bool isActive, double width, double height) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(cardBorderRadius),
-      clipBehavior: isActive ? Clip.none : Clip.hardEdge, // Side cards clipped, center not
-      child: SizedBox(
-        width: width,
-        height: height,
-        child: Image.network(
-          _getCardTypeUrl(_cardTypes[index]),
-          fit: BoxFit.contain,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: Colors.grey.withValues(alpha: 0.3),
-              child: Center(
-                child: Icon(
-                  Icons.image_not_supported,
-                  color: Colors.white.withValues(alpha: 0.5),
-                  size: 80,
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
 }
 
 /// Pagination dots component with scrolling indicator
