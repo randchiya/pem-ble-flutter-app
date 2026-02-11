@@ -6,11 +6,13 @@ import 'package:pem_ble_app/data/services/supabase_service.dart';
 class CardCarousel extends StatefulWidget {
   final Function(int)? onCardChanged;
   final int initialCard;
+  final bool showSelectedOverlay;
   
   const CardCarousel({
     super.key,
     this.onCardChanged,
     this.initialCard = 4, // Default to card 5 (index 4)
+    this.showSelectedOverlay = false,
   });
 
   @override
@@ -133,6 +135,12 @@ class _CardCarouselState extends State<CardCarousel> with SingleTickerProviderSt
     return SupabaseService.client.storage
         .from('Card Types')
         .getPublicUrl('$cardType.png');
+  }
+
+  String _getSelectedOverlayUrl() {
+    return SupabaseService.client.storage
+        .from('Card Types')
+        .getPublicUrl('Selected-Overlay.png');
   }
 
   // Get card dimensions based on screen width
