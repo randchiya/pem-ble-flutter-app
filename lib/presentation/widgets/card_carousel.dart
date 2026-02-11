@@ -6,13 +6,11 @@ import 'package:pem_ble_app/data/services/supabase_service.dart';
 class CardCarousel extends StatefulWidget {
   final Function(int)? onCardChanged;
   final int initialCard;
-  final bool showSelectedOverlay;
   
   const CardCarousel({
     super.key,
     this.onCardChanged,
     this.initialCard = 4, // Default to card 5 (index 4)
-    this.showSelectedOverlay = false,
   });
 
   @override
@@ -137,12 +135,6 @@ class _CardCarouselState extends State<CardCarousel> with SingleTickerProviderSt
         .getPublicUrl('$cardType.png');
   }
 
-  String _getSelectedOverlayUrl() {
-    return SupabaseService.client.storage
-        .from('Card Types')
-        .getPublicUrl('Selected-Overlay.png');
-  }
-
   // Get card dimensions based on screen width
   double getCardWidth(BuildContext context) {
     return MediaQuery.of(context).size.width < 600 ? cardWidthPhone : cardWidthTablet;
@@ -263,24 +255,18 @@ class _CardCarouselState extends State<CardCarousel> with SingleTickerProviderSt
         opacity: opacity,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(cardBorderRadius),
-          clipBehavior: Clip.hardEdge, // Strict clipping
-          child: Container(
+          clipBehavior: Clip.antiAlias,
+          child: SizedBox(
             width: scaledWidth,
             height: scaledHeight,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(cardBorderRadius),
-            ),
-            clipBehavior: Clip.hardEdge, // Double clipping for safety
             child: Stack(
               fit: StackFit.expand,
-              clipBehavior: Clip.hardEdge,
               children: [
                 // Base card image
                 Image.network(
                   _getCardTypeUrl(_cardTypes[index]),
                   fit: BoxFit.contain,
-                  width: scaledWidth,
-                  height: scaledHeight,
+                  alignment: Alignment.center,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       color: Colors.grey.withValues(alpha: 0.3),
@@ -299,7 +285,8 @@ class _CardCarouselState extends State<CardCarousel> with SingleTickerProviderSt
                   Positioned.fill(
                     child: Image.network(
                       _getSelectedOverlayUrl(),
-                      fit: BoxFit.fill,
+                      fit: BoxFit.contain,
+                      alignment: Alignment.center,
                       errorBuilder: (context, error, stackTrace) {
                         return const SizedBox.shrink();
                       },
@@ -308,6 +295,33 @@ class _CardCarouselState extends State<CardCarousel> with SingleTickerProviderSt
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardContent(int index, bool isActive, double width, double height) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(cardBorderRadius),
+      clipBehavior: isActive ? Clip.none : Clip.hardEdge, // Side cards clipped, center not
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: Image.network(
+          _getCardTypeUrl(_cardTypes[index]),
+          fit: BoxFit.contain,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              color: Colors.grey.withValues(alpha: 0.3),
+              child: Center(
+                child: Icon(
+                  Icons.image_not_supported,
+                  color: Colors.white.withValues(alpha: 0.5),
+                  size: 80,
+                ),
+              ),
+            );
+          },
         ),
       ),
     );
